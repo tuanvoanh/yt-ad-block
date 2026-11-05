@@ -1,0 +1,40 @@
+.video-ads,
+.ytp-ad-module,
+.ytp-ad-overlay-container,
+.ytp-ad-overlay-slot,
+.ytp-ad-image-overlay,
+.ytp-ad-progress-list,
+.ytp-ad-player-overlay,
+.ytp-ad-player-overlay-layout,
+.ytp-ad-survey,
+.ytp-ad-text-overlay,
+.ytp-ad-timed-pie-countdown-container,
+ytd-display-ad-renderer,
+ytd-promoted-sparkles-web-renderer,
+ytd-promoted-sparkles-text-search-renderer,
+ytd-promoted-video-renderer,
+ytd-ad-slot-renderer,
+ytd-in-feed-ad-layout-renderer,
+ytd-banner-promo-renderer,
+ytd-statement-banner-renderer,
+ytd-companion-slot-renderer,
+ytd-search-pyv-renderer,
+ytm-companion-slot,
+ytmusic-mealbar-promo-renderer,
+ytmusic-display-ad-renderer,
+ytmusic-statement-banner-renderer,
+#player-ads,
+#masthead-ad,
+#panels-full-bleed-container ytd-ad-slot-renderer,
+tp-yt-paper-dialog.ytd-popup-container:has(#options.ytd-checkbox-survey-renderer) {
+  display: none !important;
+}
+
+ytd-rich-item-renderer:has(ytd-ad-slot-renderer),
+ytd-rich-item-renderer:has(ytd-in-feed-ad-layout-renderer),
+ytd-rich-item-renderer:has(ytd-display-ad-renderer),
+ytd-rich-item-renderer:has(ytd-promoted-sparkles-web-renderer),
+ytd-rich-section-renderer:has(ytd-statement-banner-renderer),
+ytd-compact-video-renderer:has(ytd-ad-slot-renderer) {
+  display: none !important;
+}

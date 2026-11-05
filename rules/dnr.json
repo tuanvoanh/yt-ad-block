@@ -1,0 +1,40 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||googlevideo.com/initplayback?source=youtube&*c=TVHTML5&*oad=",
+      "initiatorDomains": [
+        "youtube.com",
+        "www.youtube.com",
+        "m.youtube.com",
+        "music.youtube.com",
+        "youtubekids.com",
+        "youtube-nocookie.com"
+      ],
+      "resourceTypes": ["xmlhttprequest"]
+    }
+  },
+  {
+    "id": 2,
+    "priority": 1,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "regexFilter": "^https?://[^/]+/[^/?#]*_ad_[^/?#]*\\.(?:mp4|m4a|webm)(?:[?#]|$)",
+      "initiatorDomains": [
+        "youtube.com",
+        "www.youtube.com",
+        "m.youtube.com",
+        "music.youtube.com",
+        "youtubekids.com",
+        "youtube-nocookie.com"
+      ],
+      "resourceTypes": ["media"]
+    }
+  }
+]

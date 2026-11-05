@@ -1,0 +1,114 @@
+engine0.dat	0x3eba1	playerAdsRight
+engine0.dat	0x89509	block-yt-ads
+engine0.dat	0x2a6879	brave-youtube-playback-speed-fix01
+engine0.dat	0x2a68a1	brave-youtube-navigation-fix01
+engine0.dat	0x2a6909	trusted-click-element, button.yt-spec-button-shape-next[aria-label="Close"][aria-disabled="false"], , 200001
+engine0.dat	0x2a697d	brave-youtube-theater-fix01
+engine0.dat	0x2b0581	#toast:has(> #text-container > yt-formatted-string#text.yt-notification-action-renderer)
+engine0.dat	0x2c1d0d	www.youtube.com
+engine0.dat	0x2c1ead	tv.youtube.com
+engine0.dat	0x2c2295	music.youtube.com
+engine0.dat	0x2dc111	yt-overlay-product-sticker
+engine0.dat	0x2f61ed	.youtube_article_ad
+engine0.dat	0x322db9	youtube.com
+engine0.dat	0x323c35	/youtubei/v1/player/ad_break
+engine0.dat	0x4c3a4d	/wp-content/plugins/igorslab-youtube-latest-shortcode/assets/frontend.js
+engine0.dat	0x4cfe01	trusted-rpfr, '"adPlacements"', '"no_ads"', player?01
+engine0.dat	0x4cfe3d	trusted-replace-xhr-response, /"adPlacements.*?("adSlots"|"adBreakHeartbeatParams")/gms, $1, /\/player(?:\?.+)?$/01
+engine0.dat	0x4cfeb5	trusted-replace-xhr-response, /"adPlacements.*?([A-Z]"\}|"\}{2\,4})\}\]\,/, , /playlist\?list=|\/player(?:\?.+)?$|watch\?[tv]=/01
+engine0.dat	0x4cff3d	trusted-replace-xhr-response, '"adPlacements"', '"no_ads"', /playlist\?list=|\/player(?:\?.+)?$|watch\?[tv]=/01
+engine0.dat	0x4cffb1	json-prune-xhr-response, adPlacements adSlots playerResponse.adPlacements playerResponse.adSlots [].playerResponse.adPlacements [].playerResponse.adSlots, , propsToMatch, /\/player(?:\?.+)?$/01
+engine0.dat	0x4d0079	json-prune-fetch-response, endpoint.watchEndpoint.unserializedPrefetchData.playerResponse.playerAds endpoint.watchEndpoint.unserializedPrefetchData.playerResponse.adPlacements endpoint.watchEndpoint.unserializedPrefetchData.playerResponse.adSlots, , propsToMatch, /resolve_url?01
+engine0.dat	0x4d0195	json-prune-fetch-response, adPlacements adSlots playerResponse.adPlacements playerResponse.adSlots, , propsToMatch, /playlist?01
+engine0.dat	0x4d021d	json-prune-fetch-response, adPlacements adSlots playerResponse.adPlacements playerResponse.adSlots [].playerResponse.adPlacements [].playerResponse.adSlots, , propsToMatch, /\/player(\?|$)/01
+engine0.dat	0x4d0821	rpnt, script, /(\(function serverContract\(\)|^if \(window\.ytcsi)/, (()=>{if("YOUTUBE_PREMIUM_LOGO"===window.ytInitialData?.topbar?.desktopTopbarRenderer?.logo?.topbarLogoRenderer?.iconImage?.iconType||"YOUTUBE_PREMIUM_LOGO"===document.getElementById("masthead")?.attributes?.["logo-type"]?.value||location.href.startsWith("https://www.youtube.com/tv#/"))return;const e=window.ytcfg.data_.INNERTUBE_CONTEXT.client.userAgent\,t=["channel"\,"lactmilli"\,"yahi"\,"inline"];let r=!1\,o=t;const n=t=>{if(t){let r=e?.match?.(/Mozilla\/5\.0 \([^)]+/)?.[0];window.ytcfg.data_.INNERTUBE_CONTEXT.client.userAgent=r?e.replace?.(r\,r+"; "+t):e}else window.ytcfg.data_.INNERTUBE_CONTEXT.client.userAgent=e}\,a=()=>{let e=document.getElementById("movie_player");return{player:e\,response:e?.getPlayerResponse?.()\,stats:e?.getStatsForNerds?.()\,progress:e?.getProgressState?.()\,buffer:e?.getPlayerStateObject?.()?.isBuffering}}\,l=(e\,t\,r)=>e&&"0.00 s"===t?.buffer_health_seconds&&"0x0"===t?.resolution&&r.length>0\,s=()=>{let{player:e\,response:t\,stats:n\,buffer:s}=a();e&&l(s\,n\,o)&&(t?.playbackTracking?.videostatsPlaybackUrl?.baseUrl?.includes?.("reloadxhr")&&(o=o.slice(1))\,r=!0)};document.addEventListener("DOMContentLoaded"\,(function(){const e=()=>{let e\,s\,{player:i\,response:d\,stats:c\,progress:p\,buffer:y}=a();if(i&&(window.location.href.includes("/watch?")||window.location.href.includes("/embed/"))){if(p&&p.duration>0&&(p.loaded<p.duration||p.duration-p.current>1)||d?.videoDetails?.isLive){if(c&&!c?.debug_info?.startsWith?.("SSAP\, AD")){const t=new URLSearchParams(window.location.search)\,a=d.videoDetails?.videoId\,u=d.playerConfig?.playbackStartConfig?.startSeconds||parseInt(t.get("t")\,10)||0\,g=d.playabilityStatus?.errorScreen\,w=JSON.stringify(g?.playerErrorMessageRenderer?.subreason?.runs||g?.playerInterstitialRenderer?.content?.interstitialViewModel?.description?.commandRuns);return void("UNPLAYABLE"===d?.playabilityStatus?.status&&!g?.playerErrorMessageRenderer?.playerCaptchaViewModel&&w?.includes?.("WEB_PAGE_TYPE_UNKNOWN")&&w?.includes?.("https://support.google.com/youtube/answer/3037019")?(o=o.slice(1)\,o.length>0?n(o[0]):n("")\,r=!1\,i.loadVideoById(a\,u)):0===o.length?(r=!1\,n("")):l(y\,c\,o)&&r?(n(o[0])\,r=!1\,i.loadVideoById(a\,u)):!r&&p.current-u>.1&&p.current-u<5&&location.href.includes("&list=")&&null===i.getPlaylistId?.()&&(e=document.querySelector("yt-playlist-manager")\,s=e?.getPlaylistData?.()\,s&&(e.setPlaylistData?.(s)\,e.setPlayerPlaybackControlData?.({playlistPanelRenderer:s}))))}c&&p.duration>0&&i.seekTo?.(p.duration)}}else o=t};e()\,new MutationObserver((()=>{e()})).observe(document\,{childList:!0\,subtree:!0})}))\,window.Map.prototype.has=new Proxy(window.Map.prototype.has\,{apply:(e\,t\,o)=>("onSnackbarMessage"!==o?.[0]||r||s()\,Reflect.apply(e\,t\,o))})\,window.Array.prototype.push=new Proxy(window.Array.prototype.push\,{apply:(e\,t\,r)=>{let o=r?.[0];return!o||"object"!=typeof o||"Uint8Array"!==o.constructor.name||o.buffer?.byteLength!==o.length||105!==o.length&&104!==o.length||(console.log(o)\,s())\,Reflect.apply(e\,t\,r)}});const i={apply:(e\,t\,r)=>{const o=r[0];return"function"==typeof o&&o.toString().includes("onAbnormalityDetected")&&(r[0]=function(){})\,Reflect.apply(e\,t\,r)}};window.Promise.prototype.then=new Proxy(window.Promise.prototype.then\,i)})();$1, sedCount, 1, excludes, MutationObserver, condition, /serverContract|js_ld/01
+engine0.dat	0x4de0d5	set, URL_VAST_YOUTUBE, {}01
+engine0.dat	0x4e0da5	/*/youtubeblocker.js
+engine0.dat	0x4ec6d5	ads.youtube.com
+engine0.dat	0x4f0111	youtube-ui.l.google.com
+engine0.dat	0x50d7f5	revancedyoutube.org
+engine0.dat	0x50d831	youtuberevanced.
+engine0.dat	0x50d861	youtubevanced.
+engine0.dat	0x531679	json-prune, ads playerAds01
+engine0.dat	0x5316f5	json-prune, ads playerAds
+engine0.dat	0x54c5f9	youtubetoolkit.com
+engine0.dat	0x594d6d	set, playerResponse.adPlacements, undefined01
+engine0.dat	0x594da1	set, ytInitialPlayerResponse.adPlacements, undefined01
+engine0.dat	0x594ddd	set, ytInitialPlayerResponse.playerAds, undefined01
+engine0.dat	0x594e15	json-prune, playerResponse.adPlacements playerResponse.playerAds adPlacements playerAds01
+engine0.dat	0x5c3d21	default-src 'unsafe-inline' 'self' data: *.ytimg.com *.facebook.com *.google.com *.gstatic.com *.youtube.com *.googleapis.com *.wp.com *.gospeljingle.com *.googletagmanager.com
+engine0.dat	0x5c4351	nowoif, youtube01
+engine0.dat	0x5cab11	m.youtube.com
+engine0.dat	0x5fb76d	script-src 'self' 'unsafe-inline' 'unsafe-eval' *.googletagservices.com *.wp.com *.air.tv *.addthis.com *.cloudflare.com *.facebook.net *.facebook.com *.gstatic.com *.youtube.com *.ytimg.com *.google.com *.googletagmanager.com *.instagram.com
+engine0.dat	0x5fd0cd	set, show_youtube_preroll, false01
+engine0.dat	0x624fa1	/initplayback?source=youtube&*c=tvhtml5&*oad=
+engine0.dat	0x624ff1	{"selector":[{"type":"css-selector","arg":".ytlr-horizontal-list-renderer__items > .yt-virtual-list__container > .yt-virtual-list__item--visible.yt-virtual-list__item--selected.yt-virtual-list__item"},{"type":"has-text","arg":"Ad"}]}
+engine0.dat	0x6250e1	json-prune, playerResponse.adPlacements playerResponse.playerAds playerResponse.adSlots adPlacements playerAds adSlots important01
+engine0.dat	0x62519d	set, ytInitialPlayerResponse.adSlots, undefined01
+engine0.dat	0x62aefd	.youtube.com/attribution_link?
+engine0.dat	0x62f925	://youtube.com/@*?si=
+engine0.dat	0x632a9d	/youtubei/v1/log_event
+engine0.dat	0x74fcc9	smetrics.cbc.youtube.mercedes-benz.com
+engine0.dat	0x76a2a1	metrics.cbc.youtube.mercedes-benz.com
+engine0.dat	0x79b4fd	/youtubei/v1/log_event?
+engine0.dat	0x79b519	youtubekids.com
+engine0.dat	0x79b5fd	youtube.googleapis.com
+engine0.dat	0x79b65d	/ptracking?html5=1&video_id=*&cpn=*&ei=*&ptk=youtube_*&pltype=content
+engine0.dat	0x79b8c1	youtube-nocookie.com
+engine0.dat	0x7dcedd	fcmatch.youtube.com
+engine0.dat	0x823839	/yt-track-streamer
+engine0.dat	0x823879	/youtubevideoanalytic.js
+engine1.dat	0x6a699	yt-consent-banner
+engine1.dat	0x16cfad	{"selector":[{"type":"css-selector","arg":"tp-yt-paper-dialog.ytmusic-popup-container"},{"type":"has-text","arg":"/family plan|Premium|ad-free|background play|kept playing|month free|without the ads|Try YouTube Music/"}]}
+engine1.dat	0x16d091	{"selector":[{"type":"css-selector","arg":"tp-yt-paper-dialog.ytd-popup-container"},{"type":"has-text","arg":"/How do you feel|Which of the following|following Premium|Get background play|Choose all that apply|Become a member of this channel|Free trial|How are your|How interested|Live TV|Wish videos|better TV|cable box|cable reimagined|hidden fees|of YouTube TV|on YouTube TV|unlimited DVR|with YouTube TV|without the ads|try this feature|Terms apply|View live scores/"}]}
+engine1.dat	0x16d271	tp-yt-paper-dialog.ytd-popup-container:has(> .ytd-popup-container > #options.ytd-checkbox-survey-renderer)
+engine1.dat	0x177879	trusted-click-element, [action="https://consent.youtube.com/save"][style="display:inline;"] [name="set_eom"][value="true"] ~ .basebuttonUIModernization[value][aria-label], , 250001
+engine1.dat	0x177a9d	trusted-click-element, [action="https://consent.youtube.com/save"][style="display:inline;"] [name="set_eom"][value="true"] ~ .basebuttonUIModernization[value][aria-label], , 150001
+engine1.dat	0x17b809	trusted-set-cookie, tarteaucitron, !eulerian-analytics=false!instagram=true!twitter=true!twitterembed=true!dailymotion=true!youtube=true01
+engine1.dat	0x17d815	trusted-set-cookie, cst_consent_aspects, 'Vimeo,Youtube,GoogleMaps'01
+engine1.dat	0x17fdd9	trusted-set-cookie, dsgvo_preferences, '{"cookiebanner":1,"dsgvo_statistics":"0","dsgvo_marketing":"0","dsgvo_external_3rd_party_youtube":"1"}', , reload, 101
+engine1.dat	0x1833ed	trusted-set-cookie, tarteaucitron, !gtag=false!youtube=true01
+engine1.dat	0x184905	trusted-set-cookie, tarteaucitron, !gajs=false!googletagmanager=false!facebook=false!twitter=false!dailymotion=false!vimeo=false!youtube=false01
+engine1.dat	0x18499d	trusted-set-cookie, tarteaucitron, !mc_analytics=false!siteimproveanalytics=false!facebook=false!instagramembed=false!twitterembed=false!youtube=false01
+engine1.dat	0x184e55	trusted-set-local-storage-item, user_anonymous_profile, '{"config":{"tracking":false,"userprofile":false,"youtube":true,"twitter":true,"facebook":true,"iframe":true,"video":{"useSubtitles":true,"useAudioDescription":true}},"votings":[],"msgflash":[],"history":[]}'01
+engine1.dat	0x188405	trusted-set-cookie, tarteaucitron, '!googletagmanager=false!matomotm=false!addtoanyshare=false!vimeo=false!youtube=false'01
+engine1.dat	0x188d45	trusted-set-cookie, cconsent, '{"version":1,"categories":{"necessary":{"wanted":true},"Microsoft":{"wanted":false},"Google":{"wanted":false},"Facebook":{"wanted":false},"YouTube":{"wanted":false}},"services":["Microsoft","analytics","facebook","YouTube"]}'01
+engine1.dat	0x18999d	trusted-set-cookie, orejime, '{"strictly_necessary":1,"iframe_youtube":false,"iframe_vimeo":false}'01
+engine1.dat	0x18aded	trusted-set-cookie, Consent_status, '!youtube=true!matomo=false!tarteaucitron=true'01
+engine1.dat	0x18c9ed	trusted-set-cookie, cookie_consent, '{"consent":true,"options":["calendly","google_maps","podigee","vimeo","youtube"]}'01
+engine1.dat	0x18ec39	trusted-set-cookie, cookieconsent_status, !tarteaucitron=true!website=true!youtube=true!openstreetmap=true!matomo=false01
+engine1.dat	0x18efe1	trusted-set-cookie, klaro, '{"default":true,"privacy":true,"youtube":true,"vimeo":true,"trusted_shops":false,"google_analytics":false,"facebook":false,"hotjar":false,"awin":false,"ads":false,"sentry":false}'01
+engine1.dat	0x18fe75	trusted-set-cookie, orejime, '{"strictly_necessary":true,"tracking":false,"youtube":true,"dailymotion":true,"Facebook":true}'01
+engine1.dat	0x190cc9	trusted-set-cookie, rodoCookieSettings, '[{"purpose":"required","value":true},{"purpose":"youtube","value":true},{"purpose":"ga","value":false},{"purpose":"fbpixel","value":false},{"purpose":"gads","value":false},{"purpose":"matomo","value":false}]'01
+engine1.dat	0x196d39	trusted-set-cookie, FMI_COOKIE_CONSENT, %7B%22ts%22%3A%221970-01-01T00%3A00%3A00.000Z%22%2C%22allow%22%3A%7B%22necessary%22%3A%7B%22fmi_necessary%22%3A1%7D%2C%22preferences%22%3A%7B%22fmi_preferences%22%3A1%7D%2C%22analytics%22%3A%7B%22rs%22%3A1%2C%22userneeds%22%3A2%7D%2C%22other%22%3A%7B%22youtube%22%3A1%2C%22fyrebox%22%3A1%7D%7D%7D, 1year01
+engine1.dat	0x1997ed	trusted-set-local-storage-item, acceptedCookies, '{"":false,"AMCV_###@AdobeOrg /":true,"AMCVS_###@AdobeOrg":true,"APISID, HSID, SAPISID, SID ja SSID cookies":true,"(auch GTM)":true,"NID cookie":true,"SIDCC cookie":true,"Youtube cookies":true,"mbox":true,"consent_adform":false,"consent_adobeanalytics":false,"consent_adobetarget":false,"consent_googleanalytics":false,"consent_googleads":false,"consent_facebook":false,"consent_giosg":false,"consent_nid":true}'01
+engine1.dat	0x19a4cd	rpnt, script, typeof jQuery !==, '(()=>{window.addEventListener("load",(function(){if(window.localStorage.appconsent){const consents=window.JSON.parse(window.localStorage.appconsent);if(consents&&consents.consents&&consents.consents.vendors){for(vendor of consents.consents.vendors){if(vendor.name==="Facebook"&&vendor.status===1)return}}}let i=0;var intervalId=window.setInterval((function(){try{i+=1;if(typeof _gtm?.consent?.cm?.strategy?.updateExtraVendorStatus!=="function")return;["facebook","instagram","pinterest","twitter","youtube"].forEach((vendor=>{_gtm.consent.cm.strategy.updateExtraVendorStatus(vendor,!0)}))}catch(_){return}if(i===5)clearInterval(intervalId)}),1e3)}))})();typeof jQuery !=='01
+engine1.dat	0x19b789	trusted-set-cookie, klaro, '{"principal":true,"googleanalytics":false,"youtube":false}'01
+engine1.dat	0x19f27d	trusted-set-cookie, GDPR, '["gdpr","youtube"]'01
+engine1.dat	0x19f845	trusted-set-cookie, userconsent, '{"analytics":false,"youtube":true}'01
+engine1.dat	0x1a00d5	trusted-set-local-storage-item, aw-thirds, '{"mode":"forced-choice","google_analytics":"deny","google_tag_manager":"deny","facebook_pixel":"deny","linkedin":"deny","youtube":"allow","google_maps":"allow"}'01
+engine1.dat	0x1a049d	trusted-set-cookie, orejime, '{"matomo":false,"youtube":true}'01
+engine1.dat	0x1a313d	trusted-set-cookie, tarteaucitron, !tarteaucitron=true!website=true!analytics=false!regex_analytic=false!regex_ads=true!googletagmanager=false!facebookpixel=false!addtoanyshare=false!youtube=true, 1year01
+engine1.dat	0x1a4e59	trusted-set-cookie, hs365-accepted-cookies, [{%22description%22:%22Enable%20you%20to%20navigate%20and%20use%20the%20basic%20functions%20and%20to%20store%20preferences.%22%2C%22key%22:%22technically_required%22%2C%22label%22:%22Technically%20necessary%20cookies%22%2C%22isMandatory%22:true}%2C{%22description%22:%22Display%20third%20party%20content%20like%2C%20for%20example%2C%20YouTube%20videos%20or%20twitter%20feeds.%22%2C%22key%22:%223rdParty%22%2C%22label%22:%22Third-Party%20Content%22}]01
+engine1.dat	0x1a508d	trusted-set-cookie, privacy_consent, %7B%22essentials%22%3Atrue%2C%22statistics%22%3Afalse%2C%22marketing%22%3Afalse%2C%22maps%22%3Atrue%2C%22youtube%22%3Atrue%7D01
+engine1.dat	0x1a5139	trusted-set-cookie, gdpr, {%22version%22:%221.0_tracking%22%2C%22options%22:{%22typo3%22:true%2C%22gdpr%22:true%2C%22openstreetmap%22:true%2C%22vimeo%22:true%2C%22youtube%22:true%2C%22recaptcha%22:true%2C%22googlemaps%22:true%2C%22tracking%22:false}}01
+engine1.dat	0x1a541d	trusted-set-cookie, hp__gdpr_consent, !demographics=false!googletagmanager=false!facebook=true!twitter=true!instagram=true!youtube=true!optimize=false!helphero=false!fbpixel=false!iterable=false!kayakWidget=false!vimeo=true!lastminute=false!apple=true!google=true!hotjar=false!getYourGuide=false!gad=false, 1year, , reload, 101
+engine1.dat	0x1a65d9	[data-p*="/consent.youtube.com"]:has(button[jsname="b3VHJd"])
+engine1.dat	0x1a6661	trusted-click-element, .ytd-consent-bump-v2-lightbox > yt-button-shape > button[aria-label="Accept the use of cookies and other data for the purposes described"], , 100001
+engine1.dat	0x1a6cb1	set-cookie, external-data-youtube-is-enabled, true01
+engine1.dat	0x1a6d29	trusted-set-cookie, cookie-layer-settings, '{"id":"b2575cbc6f69c6ff02140366ef7473e9","options":[{"analytics-is-enabled":false},{"komfort-is-enabled":false},{"personalisierung-is-enabled":false},{"external-data-is-enabled":true},{"cf-ga-opt-in":false},{"cf-fb-opt-in":false},{"cf-go-opt-in":false},{"cf-sn-opt-in":false},{"cf-am-opt-in":false},{"cf-pi-opt-in":false},{"cf-tw-opt-in":false},{"cf-li-opt-in":false},{"cf-te-opt-in":false},{"cf-ti-opt-in":false},{"cf-ttd-opt-in":false},{"external-data-youtube-is-enabled":true},{"external-data-spotify-is-enabled":true},{"external-data-googlemaps-is-enabled":true},{"external-data-universal-is-enabled":true}]}', 1year01
+engine1.dat	0x1a81d9	trusted-set-cookie, cmplz_consented_services, {"youtube":true}01
+engine1.dat	0x1b3451	body.bodyUIModernization:has([action="https://consent.youtube.com/save"] .saveButtonUIModernization[value][aria-label])
+engine1.dat	0x1b34cd	trusted-click-element, [action="https://consent.youtube.com/save"][style="display:inline;"] [name="set_eom"][value="true"] ~ .basebuttonUIModernization[value][aria-label]01
+engine1.dat	0x1d9be9	set, tweakersConfig.userConfiguredConsent.youtube.approved, true01
+engine1.dat	0x1e06a5	set-cookie, ckies_youtube_video, allow01
+engine1.dat	0x1e34a9	set-local-storage-item, youtube_gdpr_accept, yes01
+engine1.dat	0x1e9299	set-cookie, youtube-video, 101
+engine1.dat	0x1e92bd	set-cookie, youtube, 101
+engine1.dat	0x1eabd5	set-cookie, slc_vitrine_cookies_youtube, 101
+engine1.dat	0x1f4a41	set-cookie, cookie-hint-youtube, 101
+engine1.dat	0x1f5b01	set-cookie, consent-cookie-youtube, 101
+engine1.dat	0x1f62a1	set-cookie, ckies_youtube, allow01
+engine1.dat	0x204a31	.yt-consent
+engine1.dat	0x204a41	.youtube-terms-banner
+engine1.dat	0x214f65	#alert-banner > .ytd-browse > .yt-alert-with-actions-renderer
