@@ -20,9 +20,8 @@ Extension MV3 mô phỏng cách Brave 1.96.60 chặn quảng cáo YouTube, dựn
 | `json-prune playerResponse.adPlacements …` | `src/main.js` (`prune` + `JSON.parse`/`Response.json`) |
 | `json-prune-fetch-response reelWatchSequenceResponse…isAd` | `src/main.js` (prune mảng ad) |
 | `trusted-click-element`, auto skip | `src/main.js` (`tick`) |
-| `brave-yt-sabr-fix.js` | `src/main.js` (`sabrFetch`, `patchBackoff`) |
-| `brave-youtube-navigation-fix.js` | `src/main.js` (`performance.now` monotonic) |
-| Anti-adblock `rpnt` (UA markers, stall, `onAbnormalityDetected`) | `src/main.js` (`rotateMarker`, `requestReload`, `handlePlayer`, `dismissInterruption`) |
+| Anti-adblock `rpnt` (UA markers, `onAbnormalityDetected`) | `src/main.js` (`rotateMarker`, `reloadPlayer`, `recover`) |
+| `brave-yt-sabr-fix.js` / `brave-youtube-navigation-fix.js` | Không bật: cả hai là scriptlet tuỳ chọn của Brave, từng gây stall và reload lặp |
 | `*_ad_$media,domain=youtube.com,3p` | `rules/dnr.json` (rule 2) |
 | `||googlevideo.com/initplayback?source=youtube&*c=TVHTML5&*oad=` | `rules/dnr.json` (rule 1) |
 | Cosmetic selectors | `src/yt.css` + `clearFeed` |
@@ -57,21 +56,20 @@ node --check src/early.js
 node --check src/main.js
 ```
 
-Thử trên YouTube: quảng cáo đầu/giữa video, banner overlay, feed ad, và màn hình đen 4–16 giây (SABR backoff) — tất cả phải biến mất.
+Thử trên YouTube: quảng cáo đầu/giữa video, banner overlay, feed ad phải biến mất, video phát ngay và không tự reload.
 
 ## Nếu vẫn thấy “Experiencing interruptions?”
 
-Đây là hộp thoại chống adblock của YouTube. Extension xử lý theo đúng cách Brave làm:
+Đây là hộp thoại chống adblock của YouTube. Extension xử lý tối thiểu để không gây reload lặp:
 
-- Bắt `Map.prototype.has('onSnackbarMessage')` và beacon `Uint8Array` 104/105 byte để biết YouTube vừa phát hiện.
-- Luân chuyển UA marker (`channel`, `lactmilli`, `yahi`, `inline`) trong `INNERTUBE_CONTEXT.client.userAgent`, rồi `loadVideoById()` để tạo phiên mới.
-- Xoá DOM `ytd-enforcement-message-view-model` / dialog chứa “Experiencing interruptions” và “Ad blockers violate”, sau đó resume video.
+- Chỉ khi phát hiện dialog (`ytd-enforcement-message-view-model` / “Experiencing interruptions” / “Ad blockers violate”) hoặc lỗi `UNPLAYABLE` mã `3037019`.
+- Xoá dialog và resume video ngay; không reload vì stall/beacon.
+- Luân chuyển UA marker (`channel`, `lactmilli`, `yahi`, `inline`) rồi `loadVideoById()` tối đa 1 lần mỗi 30 giây (`RECOVERY_COOLDOWN`) và 4 lần/trang (`reloadBudget`).
 
 Nếu vẫn còn:
-1. Tắt các adblocker khác đang bật cùng lúc (uBO, AdGuard, extension khác) vì chúng có thể prune/block trước và làm lệch payload.
+1. Tắt các adblocker khác đang bật cùng lúc (uBO, AdGuard, extension khác).
 2. Tắt VPN/proxy (IP datacenter làm YouTube siết kiểm tra).
 3. Tải lại trang một lần (⌘R) để phiên mới đọc marker.
-4. Nếu lặp lại quá nhanh, tăng `reloadBudget` trong `src/main.js` (mặc định 12 lần/trang).
 
 ## Giới hạn
 

@@ -89,95 +89,9 @@
 
   const realFetch = window.fetch;
 
-  function readStream(reader, limit) {
-    const chunks = [];
-    let total = 0;
-    return reader.read().then(function pump(result) {
-      if (result.done) {
-        const merged = new Uint8Array(total);
-        let offset = 0;
-        for (const chunk of chunks) {
-          merged.set(chunk, offset);
-          offset += chunk.length;
-        }
-        return merged;
-      }
-      chunks.push(result.value);
-      total += result.value.length;
-      if (limit && total >= limit) {
-        try { reader.cancel(); } catch (e) {}
-        return null;
-      }
-      return reader.read().then(pump);
-    });
-  }
-
-  function patchBackoff(bytes) {
-    let patched = false;
-    for (let i = 0; i < bytes.length - 2; i++) {
-      if (bytes[i] !== 0x20) continue;
-      let value = 0;
-      let shift = 0;
-      let end = i + 1;
-      while (end < bytes.length && shift < 35) {
-        value |= (bytes[end] & 0x7f) << shift;
-        if (!(bytes[end] & 0x80)) {
-          end++;
-          break;
-        }
-        shift += 7;
-        end++;
-      }
-      if (value > 500 && value < 100000) {
-        const target = 50 + Math.floor(Math.random() * 100);
-        let position = i + 1;
-        let remaining = target;
-        while (position < end - 1) {
-          bytes[position++] = (remaining & 0x7f) | 0x80;
-          remaining >>>= 7;
-        }
-        bytes[position] = remaining & 0x7f;
-        patched = true;
-      }
-    }
-    return patched;
-  }
-
-  function sabrFetch() {
-    return realFetch.apply(this, arguments).then((response) => {
-      if (!response || !response.ok || !response.body) return response;
-      let pass;
-      let scan;
-      let meta;
-      try {
-        [pass, scan] = response.body.tee();
-        meta = {
-          status: response.status,
-          statusText: response.statusText,
-          headers: response.headers
-        };
-      } catch (e) {
-        return response;
-      }
-      return readStream(scan.getReader(), 1000).then((bytes) => {
-        if (bytes === null) return new Response(pass, meta);
-        patchBackoff(bytes);
-        const output = new Response(bytes, meta);
-        try {
-          Object.defineProperty(output, "url", { value: response.url, configurable: true });
-          Object.defineProperty(output, "type", { value: response.type, configurable: true });
-        } catch (e) {}
-        return output;
-      }).catch(() => new Response(pass, meta));
-    });
-  }
-
   if (typeof realFetch === "function") {
     window.fetch = function (input, init) {
       const url = typeof input === "string" ? input : (input && input.url) || "";
-      if (url.includes("googlevideo.com") && url.includes("sabr=1")) {
-        return sabrFetch.apply(this, arguments);
-      }
       if (!PLAYER_URL.test(url)) return realFetch.apply(this, arguments);
       return realFetch.apply(this, arguments).then((response) => {
         if (!response || !response.ok) return response;
@@ -277,19 +191,8 @@
     if (++sweeps >= 40) clearInterval(sweepTimer);
   }, 250);
 
-  try {
-    const now = performance.now.bind(performance);
-    let previous = 0;
-    performance.now = function () {
-      let current = now();
-      if (current <= previous) current = previous + Number.EPSILON * 100000;
-      previous = current;
-      return current;
-    };
-  } catch (e) {}
-
   const SKIP_SELECTOR = ".ytp-ad-skip-button-modern, .ytp-ad-skip-button, .ytp-skip-ad-button, .ytp-ad-overlay-close-button, .ytp-ad-overlay-close-container button";
-  let mutedByUs = false;
+  const AD_UI_SELECTOR = ".ytp-ad-player-overlay, .ytp-ad-preview-container, .ytp-ad-text, .ytp-ad-image-overlay, .ytp-ad-simple-ad-badge";
 
   const clearFeed = () => {
     const nodes = document.querySelectorAll("ytd-rich-item-renderer, ytd-compact-video-renderer, ytd-video-renderer, ytd-rich-section-renderer");
@@ -311,19 +214,9 @@
         if (button) {
           try { button.click(); } catch (e) {}
         }
-        if (!video.muted) {
-          try { video.muted = true; mutedByUs = true; } catch (e) {}
-        }
-        if (Number.isFinite(video.duration) && video.duration > 1) {
+        const adVisible = !!player.querySelector(AD_UI_SELECTOR);
+        if (adVisible && Number.isFinite(video.duration) && video.duration > 1 && video.currentTime < video.duration - 1) {
           try { video.currentTime = video.duration; } catch (e) {}
-        }
-      } else if (video) {
-        if (mutedByUs) {
-          try { video.muted = false; } catch (e) {}
-          mutedByUs = false;
-        }
-        if (video.playbackRate > 2) {
-          try { video.playbackRate = 1; } catch (e) {}
         }
       }
     }
@@ -334,8 +227,7 @@
 
   const UA_MARKERS = ["channel", "lactmilli", "yahi", "inline"];
   let markerQueue = UA_MARKERS.slice();
-  let pendingReload = false;
-  let reloadBudget = 12;
+  let reloadBudget = 4;
   let baseUA = null;
 
   const innertubeClient = () => {
@@ -364,8 +256,6 @@
     };
   };
 
-  const isStalled = (info) => !!(info.buffering && info.stats && info.stats.buffer_health_seconds === "0.00 s" && info.stats.resolution === "0x0");
-
   const rotateMarker = () => {
     if (reloadBudget <= 0) return false;
     markerQueue = markerQueue.length > 1 ? markerQueue.slice(1) : UA_MARKERS.slice();
@@ -378,97 +268,43 @@
     const response = info.response;
     if (!player || !response || !response.videoDetails) return;
     const id = response.videoDetails.videoId;
-    const start = (response.playerConfig && response.playerConfig.playbackStartConfig && response.playerConfig.playbackStartConfig.startSeconds) || (info.progress && info.progress.current) || 0;
+    const start = (info.progress && info.progress.current) ||
+      (response.playerConfig && response.playerConfig.playbackStartConfig && response.playerConfig.playbackStartConfig.startSeconds) || 0;
     reloadBudget--;
     try { player.loadVideoById(id, start); } catch (e) {}
   };
 
-  const requestReload = () => {
-    const info = playerInfo();
-    if (!info.player || !isStalled(info)) return;
-    const url = info.response && info.response.playbackTracking && info.response.playbackTracking.videostatsPlaybackUrl && info.response.playbackTracking.videostatsPlaybackUrl.baseUrl;
-    if (url && url.includes("reloadxhr")) markerQueue = markerQueue.slice(1);
-    pendingReload = true;
-  };
+  let lastRecovery = 0;
+  const RECOVERY_COOLDOWN = 30000;
 
-  const handlePlayer = () => {
+  const recover = () => {
     const info = playerInfo();
-    if (!info.player) return;
-    if (!location.href.includes("/watch?") && !location.href.includes("/embed/")) {
-      pendingReload = false;
-      return;
-    }
+    const now = Date.now();
 
-    if (info.stats && typeof info.stats.debug_info === "string" && info.stats.debug_info.startsWith("SSAP, AD")) {
-      if (info.progress && info.progress.duration > 0) {
-        try { info.player.seekTo(info.progress.duration); } catch (e) {}
+    let dialog = null;
+    for (const node of document.querySelectorAll("ytd-enforcement-message-view-model, yt-confirm-dialog-renderer, tp-yt-paper-dialog")) {
+      const text = node.textContent || "";
+      if (text.includes("Experiencing interruptions") || text.includes("Ad blockers violate")) {
+        dialog = node;
+        break;
       }
-      return;
     }
+    if (dialog) dialog.remove();
 
     const status = info.response && info.response.playabilityStatus;
-    if (status && status.status === "UNPLAYABLE") {
-      const error = status.errorScreen;
-      const captcha = error && error.playerErrorMessageRenderer && error.playerErrorMessageRenderer.playerCaptchaViewModel;
-      if (!captcha) {
-        const reason = JSON.stringify(
-          (error && error.playerErrorMessageRenderer && error.playerErrorMessageRenderer.subreason && error.playerErrorMessageRenderer.subreason.runs) ||
-          (error && error.playerInterstitialRenderer && error.playerInterstitialRenderer.content && error.playerInterstitialRenderer.content.interstitialViewModel && error.playerInterstitialRenderer.content.interstitialViewModel.description && error.playerInterstitialRenderer.content.interstitialViewModel.description.commandRuns) ||
-          ""
-        );
-        if (reason.includes("WEB_PAGE_TYPE_UNKNOWN") && reason.includes("3037019")) {
-          rotateMarker();
-          pendingReload = false;
-          reloadPlayer(info);
-          return;
-        }
-      }
-    }
+    const unplayable = !!(status && status.status === "UNPLAYABLE" && JSON.stringify(status.errorScreen || {}).includes("3037019"));
+    if (!dialog && !unplayable) return;
 
-    if (!pendingReload || !isStalled(info)) return;
+    if (info.player && typeof info.player.playVideo === "function") {
+      try { info.player.playVideo(); } catch (e) {}
+    }
+    if (!info.player || !info.response || !info.response.videoDetails) return;
+    if (now - lastRecovery < RECOVERY_COOLDOWN) return;
+
+    lastRecovery = now;
     rotateMarker();
-    pendingReload = false;
     reloadPlayer(info);
   };
-
-  const dismissInterruption = () => {
-    const nodes = document.querySelectorAll("ytd-enforcement-message-view-model, yt-confirm-dialog-renderer, tp-yt-paper-dialog");
-    for (const node of nodes) {
-      const text = node.textContent || "";
-      if (!text.includes("Experiencing interruptions") && !text.includes("Ad blockers violate") && !text.includes("ad blocker")) continue;
-      node.remove();
-      const info = playerInfo();
-      rotateMarker();
-      pendingReload = false;
-      reloadPlayer(info);
-      if (info.player && typeof info.player.playVideo === "function") {
-        try { info.player.playVideo(); } catch (e) {}
-      }
-    }
-  };
-
-  try {
-    const has = Map.prototype.has;
-    Map.prototype.has = new Proxy(has, {
-      apply(target, self, args) {
-        if (args[0] === "onSnackbarMessage" && !pendingReload) requestReload();
-        return Reflect.apply(target, self, args);
-      }
-    });
-  } catch (e) {}
-
-  try {
-    const push = Array.prototype.push;
-    Array.prototype.push = new Proxy(push, {
-      apply(target, self, args) {
-        const value = args[0];
-        if (!pendingReload && value && typeof value === "object" && value.constructor && value.constructor.name === "Uint8Array" && value.buffer && value.buffer.byteLength === value.length && (value.length === 104 || value.length === 105)) {
-          requestReload();
-        }
-        return Reflect.apply(target, self, args);
-      }
-    });
-  } catch (e) {}
 
   try {
     const then = Promise.prototype.then;
@@ -482,20 +318,24 @@
     });
   } catch (e) {}
 
+  let recoveryScheduled = false;
+  const scheduleRecover = () => {
+    if (recoveryScheduled) return;
+    recoveryScheduled = true;
+    setTimeout(() => {
+      recoveryScheduled = false;
+      recover();
+    }, 300);
+  };
+
   document.addEventListener("DOMContentLoaded", () => {
-    handlePlayer();
-    new MutationObserver(() => {
-      handlePlayer();
-      dismissInterruption();
-    }).observe(document, { childList: true, subtree: true });
+    recover();
+    new MutationObserver(scheduleRecover).observe(document, { childList: true, subtree: true });
   });
 
-  setInterval(handlePlayer, 1000);
-  setInterval(dismissInterruption, 1000);
+  setInterval(recover, 2000);
 
   document.addEventListener("yt-navigate-finish", () => {
-    pendingReload = false;
-    dismissInterruption();
     sweep();
   });
 
