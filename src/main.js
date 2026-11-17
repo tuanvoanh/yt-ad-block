@@ -14,7 +14,7 @@
     "adClientParams"
   ]);
 
-  const MARKER = /"adPlacements"|"adSlots"|playerAds|adBreakHeartbeatParams|adSlotRenderer|promotedSparkles|displayAdRenderer|adClientParams/;
+  const MARKER = /"(?:adPlacements|adSlots|playerAds|adBreakHeartbeatParams|adSlotRenderer|promotedSparklesWebRenderer|promotedSparklesTextSearchRenderer|displayAdRenderer|adClientParams)"/;
   const PLAYER_URL = /\/youtubei\/v1\/(?:player|get_watch)|\/reel_watch_sequence|\/playlist|\/resolve_url|\/player\?|watch\?/;
 
   const prune = (root) => {
@@ -67,21 +67,12 @@
   };
 
   try {
-    const parse = JSON.parse;
-    JSON.parse = function (text, reviver) {
-      const out = parse.call(this, text, reviver);
-      if (typeof text === "string" && MARKER.test(text) && out && typeof out === "object") {
-        try { prune(out); } catch (e) {}
-      }
-      return out;
-    };
-  } catch (e) {}
-
-  try {
     const json = Response.prototype.json;
     Response.prototype.json = function () {
       return json.call(this).then((value) => {
-        try { prune(value); } catch (e) {}
+        if (PLAYER_URL.test(this.url || "")) {
+          try { prune(value); } catch (e) {}
+        }
         return value;
       });
     };
@@ -174,15 +165,12 @@
   };
 
   hookGlobal("ytInitialPlayerResponse");
-  hookGlobal("ytInitialData");
 
   const sweep = () => {
-    for (const name of ["ytInitialPlayerResponse", "ytInitialData"]) {
-      try {
-        const value = window[name];
-        if (value && typeof value === "object") prune(value);
-      } catch (e) {}
-    }
+    try {
+      const value = window.ytInitialPlayerResponse;
+      if (value && typeof value === "object") prune(value);
+    } catch (e) {}
   };
 
   let sweeps = 0;
@@ -195,10 +183,10 @@
   const AD_UI_SELECTOR = ".ytp-ad-player-overlay, .ytp-ad-preview-container, .ytp-ad-text, .ytp-ad-image-overlay, .ytp-ad-simple-ad-badge";
 
   const clearFeed = () => {
-    const nodes = document.querySelectorAll("ytd-rich-item-renderer, ytd-compact-video-renderer, ytd-video-renderer, ytd-rich-section-renderer");
+    const nodes = document.querySelectorAll("ytd-rich-item-renderer");
     for (const node of nodes) {
       if (node.__ytabAd) continue;
-      if (node.querySelector("ytd-ad-slot-renderer, ytd-in-feed-ad-layout-renderer, ytd-display-ad-renderer, ytd-promoted-sparkles-web-renderer, ytd-statement-banner-renderer")) {
+      if (node.querySelector("ytd-ad-slot-renderer, ytd-in-feed-ad-layout-renderer, ytd-display-ad-renderer, ytd-promoted-sparkles-web-renderer")) {
         node.__ytabAd = true;
         node.remove();
       }

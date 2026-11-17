@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Brave-style YouTube AdBlock",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Strip YouTube ad payloads from Innertube responses, patch SABR ad backoff, and recover from anti-adblock stalls, mirroring Brave's shipped filter lists.",
   "permissions": [
     "declarativeNetRequest",
