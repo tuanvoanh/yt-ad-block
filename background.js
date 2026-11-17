@@ -1,20 +1,31 @@
 const YT_ORIGIN = /^https?:\/\/(?:[^/]+\.)?(?:youtube\.com|youtube-nocookie\.com)\//;
 
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.local.get("enabled").then((state) => {
-    if (state.enabled === undefined) {
-      chrome.storage.local.set({ enabled: true });
+  try {
+    const result = chrome.storage.local.get("enabled");
+    if (result && typeof result.then === "function") {
+      result.then((state) => {
+        if (state && state.enabled === undefined) chrome.storage.local.set({ enabled: true });
+      }).catch(() => {});
+      return;
     }
-  }).catch(() => {});
+    chrome.storage.local.get("enabled", (state) => {
+      if (state && state.enabled === undefined) chrome.storage.local.set({ enabled: true });
+    });
+  } catch (e) {}
 });
 
 function injectMain(tabId, frameId) {
-  chrome.scripting.executeScript({
-    target: { tabId, frameIds: [frameId] },
-    world: "MAIN",
-    injectImmediately: true,
-    files: ["src/main.js"]
-  }).catch(() => {});
+  try {
+    if (!chrome.scripting || typeof chrome.scripting.executeScript !== "function") return;
+    const pending = chrome.scripting.executeScript({
+      target: { tabId, frameIds: [frameId] },
+      world: "MAIN",
+      injectImmediately: true,
+      files: ["src/main.js"]
+    });
+    if (pending && typeof pending.catch === "function") pending.catch(() => {});
+  } catch (e) {}
 }
 
 if (chrome.webNavigation && chrome.webNavigation.onCommitted) {

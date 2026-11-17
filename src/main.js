@@ -211,7 +211,7 @@
     clearFeed();
   };
 
-  setInterval(tick, 200);
+  setInterval(() => { try { tick(); } catch (e) {} }, 200);
 
   const UA_MARKERS = ["channel", "lactmilli", "yahi", "inline"];
   let markerQueue = UA_MARKERS.slice();
@@ -233,14 +233,19 @@
     return true;
   };
 
+  const safeCall = (fn, fallback) => {
+    try { return fn(); } catch (e) { return fallback; }
+  };
+
   const playerInfo = () => {
     const player = document.getElementById("movie_player");
+    if (!player) return { player: null, response: null, stats: null, progress: null, buffering: false };
     return {
       player,
-      response: player && typeof player.getPlayerResponse === "function" ? player.getPlayerResponse() : null,
-      stats: player && typeof player.getStatsForNerds === "function" ? player.getStatsForNerds() : null,
-      progress: player && typeof player.getProgressState === "function" ? player.getProgressState() : null,
-      buffering: player && typeof player.getPlayerStateObject === "function" ? !!((player.getPlayerStateObject() || {}).isBuffering) : false
+      response: safeCall(() => (typeof player.getPlayerResponse === "function" ? player.getPlayerResponse() : null), null),
+      stats: safeCall(() => (typeof player.getStatsForNerds === "function" ? player.getStatsForNerds() : null), null),
+      progress: safeCall(() => (typeof player.getProgressState === "function" ? player.getProgressState() : null), null),
+      buffering: safeCall(() => (typeof player.getPlayerStateObject === "function" ? !!((player.getPlayerStateObject() || {}).isBuffering) : false), false)
     };
   };
 
@@ -266,6 +271,10 @@
   const RECOVERY_COOLDOWN = 30000;
 
   const recover = () => {
+    try { recoverOnce(); } catch (e) {}
+  };
+
+  const recoverOnce = () => {
     const info = playerInfo();
     const now = Date.now();
 
